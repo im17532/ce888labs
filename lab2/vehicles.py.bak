@@ -1,0 +1,78 @@
+import matplotlib
+
+matplotlib.use('Agg')
+
+import pandas as pd
+import random
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+import numpy as np
+
+
+# def permutation(statistic, error):
+
+
+def mad(arr):
+    """ Median Absolute Deviation: a "Robust" version of standard deviation.
+        Indices variabililty of the sample.
+        https://en.wikipedia.org/wiki/Median_absolute_deviation
+        http://stackoverflow.com/questions/8930370/where-can-i-find-mad-mean-absolute-deviation-in-scipy
+    """
+    arr = np.ma.array(arr).compressed()  # should be faster to not use masked arrays.
+    med = np.median(arr)
+    return np.median(np.abs(arr - med))
+
+
+if __name__ == "__main__":
+    df = pd.read_csv('./vehicles.csv')
+    print(df.columns)
+
+    data0 = df.values.T[0]
+    data1 = df.values.T[1]
+
+    # xlabel1 = []
+    # for i in range(0,len(data0)):
+    #     xlabel1 += [i+1]
+    #xlab = xlabel1.apply(pd.to_numeric)
+    print("This is the figures for Fleet")
+    print((("Mean: %f") % (np.mean(data0))))
+    print((("Median: %f") % (np.median(data0))))
+    print((("Var: %f") % (np.var(data0))))
+    print((("std: %f") % (np.std(data0))))
+    print((("MAD: %f") % (mad(data0))))
+
+    data_clean = data1[~np.isnan(data1)]
+    # xlabel2 = []
+    # for i in range(0, len(data_clean)):
+    #     xlabel2 += [i + 1]
+    print (data0)
+    print (data_clean)
+    print("This is tha figures for Current Fleet")
+    print((("Mean: %f") % (np.mean(data_clean))))
+    print((("Median: %f") % (np.median(data_clean))))
+    print((("Var: %f") % (np.var(data_clean))))
+    print((("std: %f") % (np.std(data_clean))))
+    print((("MAD: %f") % (mad(data_clean))))
+
+
+# ## PLOTS
+
+    sns_plot = sns.lmplot(range(0,len(data0),1), data0, data=data0, fit_reg=False)
+    sns_plot.axes[0, 0].set_ylim(0, )
+    sns_plot.axes[0, 0].set_xlim(0, )
+    sns_plot.savefig("scaterplotAA.png", bbox_inches='tight')
+    sns_plot.savefig("scaterplotAA.pdf", bbox_inches='tight')
+
+
+    plt.clf()
+    sns_plot2 = sns.distplot(data, bins=20, kde=False, rug=True).get_figure()
+
+    axes = plt.gca()
+    axes.set_xlabel('Millons of pounds in sales')
+    axes.set_ylabel('Sales count')
+
+    sns_plot2.savefig("vehicles_histogram.png", bbox_inches='tight')
+    sns_plot2.savefig("vehicles_myhistogram.pdf", bbox_inches='tight')
+
+
